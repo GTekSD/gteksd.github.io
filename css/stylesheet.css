@@ -3335,8 +3335,10 @@ input:-internal-autofill-selected {
 .logo-carousel {
   width:120px;
   height:120px;
-  
   margin:auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .logo-resume {
