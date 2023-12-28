@@ -1,1 +1,1 @@
-alert("XSS_HACKED")
+alert("XSS_GTekSDHacks")
