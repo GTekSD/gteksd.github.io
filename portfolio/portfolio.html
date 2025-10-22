@@ -146,8 +146,9 @@
             <div class="pl-4">
               <ul class="list-style-2 list-style-light text-light">
                 <li><span class="font-weight-600 mr-2">Name:</span>Suhas Dhole</li>
-                <li><span class="font-weight-600 mr-2">Email:</span><a href="mailto:er.sdhole@gteksd.com">er.sdhole@gteksd.com</a></li>
-                <li><span class="font-weight-600 mr-2">Age:</span><script>document.write(new Date().getFullYear() - 1999);</script></li>
+                <li><span class="font-weight-600 mr-2">Email:</span><a href="mailto:er.sdhole@gmail.com">er.sdhole@gmail.com</a></li>
+                <!-- Old code: <script>document.write(new Date().getFullYear() - 1999);</script> -->
+                <li><span class="font-weight-600 mr-2">Age:</span> <script> const b=new Date(1999,8,17), t=new Date(); document.write(t.getFullYear()-b.getFullYear()-(t<b.setFullYear(t.getFullYear())?1:0)); </script></li>
                 <li class="border-0"><span class="font-weight-600 mr-2">From:</span>Mumbai, India</li>
               </ul>
               <a href="data/SUHAS%20DHOLE_Security_Consultant.pdf" target="_blank" class="btn btn-primary rounded-pill ">Download CV 📃</a> </div>
@@ -219,7 +220,16 @@
         <div class="row"> 
           <!-- My Experience -->
           <div class="col-md-6">
-            <h2 class="text-6 text-white font-weight-600 mb-4">My Experience</h2>
+            <h2 class="text-6 text-white font-weight-600 mb-4">
+              My Experience - 
+              <!-- Old code: <script>document.write(new Date().getFullYear() - 2023);</script> yrs -->
+              <script>
+                const d=new Date(),y=2022,m=7;
+                document.write(((d.getFullYear()-y)+(d.getMonth()-m)/12).toFixed(1)+" yrs");
+              </script>
+            </h2>
+          </div>
+
 
             <!--ANZEN Application Security Consultant-->
             <div class="border border-dark rounded p-4 mb-4">
@@ -229,9 +239,17 @@
               <!--<img class="logo-resume" src="images/clients/anzen.png" alt="" />-->
               <p class="text-light mb-0"></p>
               <ul class="text-light mb-0">
-                <li>Conducted thorough security assessments across various applications and networks, fortifying defenses against potential vulnerabilities in web, mobile, and API systems.</li>
-                <li>Led critical black-box testing for 24 web applications, resolving 6 critical, 13 high, and 19 low-level findings, significantly strengthening the security stance of the applications.</li>
-                <li>Orchestrated red teaming activities and simulations, employing industry-standard tools and methodologies to uncover and address vulnerabilities, enhancing overall security resilience for clients.</li>
+                <li>Performed 30+ end-to-end security assessments for enterprise clients across telecom, finance, healthcare, and ecommerce sectors — including Web, Mobile, API, and Network VAPT, tailored to black-box or gray-box methodologies.</li>
+                <li>Conducted 20+ network VAPT audits (internal and external), leveraging tools like Nessus, Qualys, Nmap, and manual techniques to identify misconfigurations, privilege escalations, and unpatched vulnerabilities.</li>
+                <li>Performed 10+ API security assessments by fuzzing endpoints, analyzing authentication flaws, and identifying logic bypass issues as per OWASP API Top 10.</li>
+                <li>Executed secure code reviews for applications developed in Java, Python, .Net and PHP, identifying 50+ critical flaws such as hardcoded secrets, insecure deserialization, and broken access control.</li>
+                <li>Led red team engagements focusing on reconnaissance, lateral movement and privilege escalation using MITRE ATT&CK framework; collaborated with blue teams to validate detection and response mechanisms.</li>
+                <li>Conducted wireless penetration testing of enterprise infrastructure to identify rogue access points, WPA/WPA2 cracking vulnerabilities, and misconfigured segmentation.</li>
+                <li>Analyzed IoT firmware for reverse engineering and vulnerability identification, including insecure storage and hardcoded credentials; supported remediation planning.</li>
+                <li>Managed vulnerability lifecycle using Qualys VMDR: triaged reports, prioritized risk buckets, and collaborated with cross functional teams and stakeholders to remediate issues before deadlines breach.</li>
+                <li>Delivered 50+ detailed technical and executive reports, providing risk ratings, mitigation steps, and custom remediation walkthroughs aligned with NIST and OWASP standards.</li>
+                <li>Developed custom automation scripts for network VAPT assessments to streamline repetitive checks, reducing manual effort and reporting time.</li>
+                <li>Contributed to internal knowledge base and process improvement initiatives, mentoring junior interns and standardizing report templates for the security team.</li>
               </ul>
             </div>
 		  
@@ -252,7 +270,7 @@
             <!--Corizo Cyber Security Intern-->
             <div class="border border-dark rounded p-4 mb-4">
               <p class="badge badge-success text-2 font-weight-400">AUG 2022 - DEC 2022</p>
-              <h3 class="text-5 text-white">Cyber Security Intern</h3>
+              <h3 class="text-5 text-white">Cyber Security Trainee</h3>
               <p class="text-primary">Corizo &nbsp; <a href="https://corizo.in/" target="_blank"><i class="fas fa-external-link-alt"></i></a></p>
               <p class="text-light mb-0"></p>
               <ul class="text-light mb-0">
@@ -266,7 +284,7 @@
             <!--VST InfoTech Software Developer Intern-->
             <div class="border border-dark rounded p-4 mb-4">
               <p class="badge badge-success text-2 font-weight-400">JUL 2021 - DEC 2021</p>
-              <h3 class="text-5 text-white">Software Developer Intern</h3>
+              <h3 class="text-5 text-white">Jr. Software Developer</h3>
               <p class="text-primary">VST InfoTech &nbsp; <a href="https://www.linkedin.com/in/suhas1799/details/experience/1635505321114/single-media-viewer/" target="_blank"><i class="fas fa-external-link-alt"></i></a></p>
               <p class="text-light mb-0"></p>
               <ul class="text-light mb-0">
@@ -308,6 +326,14 @@
               </ul>
             </div>
 		  -->
+            <!--Parul University (PU)-->
+            <div class="border border-dark rounded p-4 mb-4">
+              <p class="badge badge-success text-2 font-weight-400">2025 - 2027</p>
+              <h3 class="text-5 text-white">Master of Business Administration (MBA)</h3>
+              <h3 class="text-4 text-white">Information Technology</h3>
+              <p class="text-primary">Parul University (PU) &nbsp; <a href="https://paruluniversity.ac.in/" target="_blank"><i class="fas fa-external-link-alt"></i></a></p>
+              <li class="text-3 text-white">Cumulative GPA: NA</li>
+            </div>
 
             <!--Savitribai Phule Pune University (SPPU)-->
             <div class="border border-dark rounded p-4 mb-4">
@@ -330,6 +356,16 @@
             <!--Courses and Certificates-->
             <h2 class="text-6 text-white font-weight-600 mb-4">My Courses and Certificates</h2>
 
+            <!-- Certified Red Team Analyst [CRTA] -->
+            <div class="border border-dark rounded p-4 mb-4">
+              <p class="badge badge-success text-2 font-weight-400">August 2025 - Currently Studying</p>
+              <h3 class="text-5 text-white">Certified Red Team Analyst [CRTA]</h3>
+              <p class="text-primary">CW Labs Pvt. Ltd. &nbsp; <a href="https://cyberwarfare.live/product/red-team-analyst-crta/" target="_blank"><i class="fas fa-external-link-alt"></i></a></p>
+              <ul class="text-light mb-0">
+                <li>Red Teaming in External Environment</li>
+                <li>Red Teaming in Internal Environment</li>
+            </ul>            
+            </div>            
 
             <!-- Certified Penetration Tester (C|PENT) -->
             <div class="border border-dark rounded p-4 mb-4">
