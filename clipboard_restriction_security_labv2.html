@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTekSD Security Lab: Clipboard Restriction & Advanced Input Suite</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#090d16',
+                            card: '#111827',
+                            border: '#1e293b',
+                            accent: '#06b6d4',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                            matrix: '#00ff66',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'Monaco', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        .code-block {
+            background-color: #050810;
+            border: 1px solid #1e293b;
+        }
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        /* Matrix mode styling override */
+        html.matrix-mode body {
+            background-color: #020b05;
+            color: #00ff66;
+        }
+        html.matrix-mode .bg-cyber-card {
+            background-color: #05140a;
+            border-color: #008033;
+        }
+        html.matrix-mode .code-block {
+            background-color: #010803;
+            border-color: #006622;
+            color: #00ff66;
+        }
+        html.matrix-mode header, html.matrix-mode footer {
+            background-color: #031207;
+            border-color: #008033;
+        }
+        .logo-glow {
+            filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.4));
+        }
+    </style>
+</head>
+<body class="bg-cyber-bg text-gray-200 font-sans min-h-screen flex flex-col justify-between transition-colors duration-300">
+
+    <!-- Header with GTekSD Branding -->
+    <header class="border-b border-cyber-border bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-3.5 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+            
+            <!-- GTekSD Logo & Brand Details -->
+            <div class="flex items-center space-x-3.5">
+                <!-- Custom GTekSD High-Tech SVG Logo -->
+                <div class="relative p-2 bg-slate-950 border border-cyan-500/40 rounded-xl logo-glow flex items-center justify-center">
+                    <svg class="w-9 h-9" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" stroke="#06b6d4" stroke-width="4" fill="none"/>
+                        <path d="M30 35 H70 V45 H45 V55 H65 V70 H30 V60 H55 V55 H30 Z" fill="#06b6d4"/>
+                        <circle cx="50" cy="50" r="3" fill="#10b981"/>
+                        <path d="M50 15 L80 30" stroke="#10b981" stroke-width="2" stroke-dasharray="2 2"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2 font-mono">
+                            GTekSD <span class="text-cyan-400 font-normal">Security Lab</span>
+                        </h1>
+                        <span class="text-[11px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 rounded-full font-mono">SecSuite v3.5</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <span>Clipboard & Advanced Input Security Testing Engine</span>
+                        <span class="text-slate-600">•</span>
+                        <span class="text-cyan-400 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-user-shield text-[10px]"></i> GTekSD (Сухас Дхолз)
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Quick Action Bar -->
+            <div class="flex items-center flex-wrap gap-2 text-xs font-mono">
+                <!-- Copy Test Vector Payload -->
+                <button id="btn-copy-payload" onclick="copyTestPayload()" class="px-3 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg transition flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span>Copy Vector (<code class="font-bold">GTekSD-SEC-2026-TEST</code>)</span>
+                </button>
+
+                <!-- Toggle All Restrictions Mass Switch -->
+                <button onclick="toggleAllMethods()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-power-off text-amber-400"></i>
+                    <span id="mass-toggle-label">Toggle All Off</span>
+                </button>
+
+                <!-- Theme Switcher (Dark Cyber vs Matrix) -->
+                <button onclick="toggleMatrixTheme()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-terminal"></i>
+                    <span id="theme-btn-text">Matrix View</span>
+                </button>
+
+                <!-- Reset Inputs -->
+                <button onclick="clearAllInputs()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-gray-300 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left text-rose-400"></i>
+                    <span>Reset</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed top-16 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 w-full space-y-6 flex-grow">
+
+        <!-- Lab Overview & Author Info Banner -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-4 text-xs text-gray-300 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-shield-cat text-cyan-400 text-lg flex-shrink-0 mt-0.5"></i>
+                <div class="space-y-1">
+                    <p class="font-semibold text-white">GTekSD Security Benchmarking & Dynamic Testing Bench</p>
+                    <p class="text-gray-400 text-[11px]">Designed by <strong class="text-cyan-300">GTekSD (Сухас Дхолз)</strong> to analyze client-side input controls, clipboard events, iframe/shadow DOM traversals, native setters, and pacing mechanisms. Toggle switches to benchmark live[cite: 2].</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 text-xs font-mono flex-shrink-0">
+                <span class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-gray-300 flex items-center gap-1.5">
+                    <span id="active-engines-count" class="w-2 h-2 rounded-full bg-emerald-400"></span> 
+                    <span id="active-count-text">11/11 Restrictions Active</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 11 Security Test Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- CARD 1: JS Event Listener Interception -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-1">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 01</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-1" checked onchange="toggleMethod(1)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-1">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            JS Event Listener (<code class="text-cyan-400 text-xs">preventDefault</code>)
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Intercepts native DOM <code class="text-cyan-300">paste</code>, <code class="text-cyan-300">copy</code>, and <code class="text-cyan-300">cut</code> events programmatically[cite: 2].</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Test Input Field:</label>
+                        <span id="badge-1" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Allowed</span>
+                    </div>
+                    <input type="text" 
+                           id="field-1" 
+                           placeholder="Try pasting text here..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>input.addEventListener('paste', e => {<br>&nbsp;&nbsp;if (active) e.preventDefault();<br>});</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">DevTools Override:</strong> Inspect element -&gt; Event Listeners tab -&gt; Remove `paste` listener[cite: 2].</p>
+                        <p><strong class="text-emerald-400">Console Injection:</strong></p>
+                        <code class="text-cyan-300 block bg-slate-900 p-1 rounded my-1">getEventListeners(field1).paste[0].remove()</code>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 2: HTML Inline Event Attributes -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-2">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 02</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-2" checked onchange="toggleMethod(2)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-2">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            HTML Inline Attributes
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Embeds inline event handlers like <code class="text-cyan-300">onpaste="return false;"</code> in HTML tags[cite: 2].</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Test Input Field:</label>
+                        <span id="badge-2" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Allowed</span>
+                    </div>
+                    <input type="text" 
+                           id="field-2" 
+                           placeholder="Try pasting text here..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>&lt;input onpaste="return false;"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oncopy="return false;" /&gt;</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">DOM Attribute Strip:</strong> Edit HTML in Inspector or execute console script[cite: 2]:</p>
+                        <code class="text-cyan-300 block bg-slate-900 p-1 rounded my-1">field2.removeAttribute('onpaste')</code>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 3: Keyboard Shortcut Interceptor -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-3">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 03</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-3" checked onchange="toggleMethod(3)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-3">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Keyboard Combination Interceptor
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Blocks <kbd class="bg-slate-800 px-1 py-0.5 rounded text-[10px]">Ctrl+V</kbd>, <kbd class="bg-slate-800 px-1 py-0.5 rounded text-[10px]">Cmd+V</kbd>, and <kbd class="bg-slate-800 px-1 py-0.5 rounded text-[10px]">Shift+Insert</kbd> during <code class="text-cyan-300">keydown</code>[cite: 2].</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Test Input Field:</label>
+                        <span id="badge-3" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Allowed</span>
+                    </div>
+                    <input type="text" 
+                           id="field-3" 
+                           placeholder="Try pressing Ctrl+V or Cmd+V..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>field.addEventListener('keydown', e => {<br>&nbsp;&nbsp;if ((e.ctrlKey||e.metaKey)&&e.key==='v')<br>&nbsp;&nbsp;&nbsp;&nbsp;e.preventDefault();<br>});</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Mouse Context Menu Bypass:</strong> Keydown listeners only catch keyboard events! Right-click -&gt; Select "Paste" will work completely[cite: 2].</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 4: Context Menu & Selection Blocker -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-4">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 04</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-4" checked onchange="toggleMethod(4)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-4">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Context Menu & CSS Blocker
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Disables right-click menu (<code class="text-cyan-300">contextmenu</code>) & text selection (<code class="text-cyan-300">user-select: none</code>)[cite: 2].</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Test Input Field:</label>
+                        <span id="badge-4" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Allowed</span>
+                    </div>
+                    <input type="text" 
+                           id="field-4" 
+                           placeholder="Right click & highlight text disabled..." 
+                           class="no-select w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>input.style.userSelect = 'none';<br>input.addEventListener('contextmenu', e => {<br>&nbsp;&nbsp;e.preventDefault();<br>});</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Direct Shortcut Bypass:</strong> Press <kbd class="bg-slate-800 px-1 py-0.5 rounded text-gray-200">Ctrl+V</kbd> or <kbd class="bg-slate-800 px-1 py-0.5 rounded text-gray-200">Cmd+V</kbd> directly; keyboard events bypass CSS/contextmenu restrictions[cite: 2].</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 5: Dynamic Mutation & Cleansing -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-5">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 05</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-5" checked onchange="toggleMethod(5)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-5">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Dynamic Mutation & Cleansing
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Allows paste event to trigger, but asynchronously sanitizes/scrubs input on microtask tick[cite: 2].</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Test Input Field:</label>
+                        <span id="badge-5" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">Allowed</span>
+                    </div>
+                    <input type="text" 
+                           id="field-5" 
+                           placeholder="Pasted values get scrubbed immediately..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>field.addEventListener('paste', () => {<br>&nbsp;&nbsp;setTimeout(() => field.value = '', 0);<br>});</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Stop Event Propagation:</strong> Intercept paste in capture phase and call <code class="text-cyan-300">e.stopPropagation()</code> before sanitizer listener runs[cite: 2].</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 6: Canvas Virtual Render Engine -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-6">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 06</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-6" checked onchange="toggleMethod(6)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-6">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Canvas Virtual Non-DOM Input
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Renders typed text directly onto Canvas graphics pixels. Eliminates native HTML DOM input bindings[cite: 2].</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Canvas Surface:</label>
+                        <span id="canvas-status-badge" class="text-[10px] text-gray-400 font-mono">Click canvas to focus</span>
+                    </div>
+                    <div class="relative">
+                        <canvas id="custom-canvas-input" 
+                                width="320" 
+                                height="38" 
+                                tabindex="0" 
+                                class="w-full h-[38px] bg-slate-950 border border-slate-700 rounded-lg cursor-text focus:outline-none focus:border-cyan-500 transition"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>// No HTML input element exists!<br>canvas.addEventListener('keydown', e => {<br>&nbsp;&nbsp;buf += e.key; renderCanvas();<br>});</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Automation Bypass:</strong> Dispatch synthetic key loops or inspect global JS memory object[cite: 2]:</p>
+                        <code class="text-cyan-300 block bg-slate-900 p-1 rounded my-1">window.canvasState = "injectedPayload"</code>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 7: Same-Origin Iframe Focus Traversal -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-7">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 07</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-7" checked onchange="toggleMethod(7)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-7">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Same-Origin Iframe Focus Traversal
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Recursively inspects activeElement inside same-origin <code class="text-cyan-300">&lt;iframe&gt;</code> documents to route editing commands to the child frame's document.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Child Frame Embedded Input:</label>
+                        <button onclick="testIframeTraversal()" class="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded hover:bg-cyan-900 font-mono transition">
+                            <i class="fa-solid fa-arrows-to-eye"></i> Traverse & Focus
+                        </button>
+                    </div>
+                    <iframe id="iframe-target" class="w-full h-12 bg-slate-950 border border-slate-700 rounded-lg overflow-hidden"></iframe>
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>function getDeepActive(doc = document) {<br>&nbsp;&nbsp;let act = doc.activeElement;<br>&nbsp;&nbsp;while (act && act.tagName === 'IFRAME') {<br>&nbsp;&nbsp;&nbsp;&nbsp;try { act = act.contentDocument.activeElement; }<br>&nbsp;&nbsp;&nbsp;&nbsp;catch(e) { break; }<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;return act;<br>}</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Context Trap:</strong> Top-level `document.activeElement` only yields the `&lt;iframe&gt;` node itself. Recursive traversal drills into `contentDocument.activeElement`.</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 8: Shadow DOM Focus Traversal -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-8">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 08</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-8" checked onchange="toggleMethod(8)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-8">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Shadow DOM Focus Traversal
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Recursively inspects <code class="text-cyan-300">shadowRoot.activeElement</code> across open shadow roots to locate controls encapsulated inside web components.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Custom Element Web Component:</label>
+                        <button onclick="testShadowDOMTraversal()" class="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded hover:bg-cyan-900 font-mono transition">
+                            <i class="fa-solid fa-ghost"></i> Locate in Shadow DOM
+                        </button>
+                    </div>
+                    <shadow-input-component id="shadow-container"></shadow-input-component>
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>function getShadowActive(root = document) {<br>&nbsp;&nbsp;let el = root.activeElement;<br>&nbsp;&nbsp;while (el && el.shadowRoot && el.shadowRoot.activeElement) {<br>&nbsp;&nbsp;&nbsp;&nbsp;el = el.shadowRoot.activeElement;<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;return el;<br>}</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Encapsulation Bypass:</strong> Web components hide elements in `shadowRoot`. standard DOM queries miss child inputs unless checking open shadow roots recursively.</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 9: Native Value Setter & Event Dispatching -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-9">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 09</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-9" checked onchange="toggleMethod(9)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-9">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Native Value Setter & Event Dispatching
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Invokes <code class="text-cyan-300">HTMLInputElement.prototype</code>'s native value setter and explicitly dispatches an input event to trigger framework state updates (e.g., React, Vue) when direct property assignment fails.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Simulated Reactive Field:</label>
+                        <button onclick="injectNativeSetter()" class="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded hover:bg-cyan-900 font-mono transition">
+                            <i class="fa-solid fa-bolt"></i> Bypass Framework Setter
+                        </button>
+                    </div>
+                    <input type="text" 
+                           id="field-9" 
+                           placeholder="Direct JS .value assignment fails..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                    <div class="text-[10px] font-mono text-gray-500 flex justify-between">
+                        <span>Framework State Tracker:</span>
+                        <span id="reactive-state-display" class="text-amber-400 font-bold">[Empty State]</span>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>const setter = Object.getOwnPropertyDescriptor(<br>&nbsp;&nbsp;HTMLInputElement.prototype, 'value'<br>).set;<br>setter.call(input, payload);<br>input.dispatchEvent(new Event('input', { bubbles: true }));</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Framework Override:</strong> Frameworks override property descriptors. Calling `HTMLInputElement.prototype` setter directly and dispatching `input` forces state reactivity sync.</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 10: Selection-Free Input Fallback -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-10">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 10</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-10" checked onchange="toggleMethod(10)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-10">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Selection-Free Input Fallback
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Safely handles text insertion and backspacing without referencing <code class="text-cyan-300">selectionStart</code> or <code class="text-cyan-300">selectionEnd</code> on inputs where those properties are prohibited (e.g. <code class="text-cyan-300">&lt;input type="email"&gt;</code>).</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Restricted Input (&lt;input type="email"&gt;):</label>
+                        <button onclick="testSelectionFreeFallback()" class="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded hover:bg-cyan-900 font-mono transition">
+                            <i class="fa-solid fa-shield-cat"></i> Safe Insert
+                        </button>
+                    </div>
+                    <input type="email" 
+                           id="field-10" 
+                           placeholder="Email field: selectionStart prohibited..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>try {<br>&nbsp;&nbsp;const start = input.selectionStart;<br>} catch (err) {<br>&nbsp;&nbsp;// Selection-Free Fallback Execution<br>&nbsp;&nbsp;input.value += textPayload;<br>}</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Exception Handling:</strong> Modern browsers throw a `DOMException` on email/number input selection access. Try/catch enables graceful fallback concat.</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- CARD 11: Input Event Throttling (120ms Delay) -->
+            <div class="bg-cyber-card border border-cyber-border rounded-xl p-5 flex flex-col justify-between space-y-4 hover:border-slate-700 transition" id="card-11">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Method 11</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-11" checked onchange="toggleMethod(11)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-600"></div>
+                            <span class="ml-2 text-[11px] font-mono text-gray-400" id="toggle-label-11">Active</span>
+                        </label>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            Input Event Throttling
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">Enforces a 120 ms minimum delay between dispatched input events in Fast mode so polling-based editors (e.g., CodeMirror 5) can process each character without dropping input.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <label class="text-gray-400">Polling / Fast-Mode Editor Field:</label>
+                        <button onclick="runThrottledInputInjection()" class="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded hover:bg-cyan-900 font-mono transition">
+                            <i class="fa-solid fa-stopwatch"></i> Run 120ms Injection
+                        </button>
+                    </div>
+                    <input type="text" 
+                           id="field-11" 
+                           placeholder="Simulated editor input field..." 
+                           class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-cyan-500 font-mono transition" />
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-[10px] font-mono text-gray-500">Implementation Code:</span>
+                    <div class="code-block p-2 rounded-lg text-[11px] font-mono text-cyan-300 overflow-x-auto">
+                        <code>for (const char of payload) {<br>&nbsp;&nbsp;input.value += char;<br>&nbsp;&nbsp;input.dispatchEvent(new Event('input', {bubbles:true}));<br>&nbsp;&nbsp;await new Promise(r => setTimeout(r, 120));<br>}</code>
+                    </div>
+                </div>
+
+                <details class="text-xs text-gray-400 border-t border-slate-800/80 pt-2 cursor-pointer group">
+                    <summary class="font-mono text-cyan-400 hover:text-cyan-300 font-semibold list-none flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-virus text-rose-400 mr-1"></i> GTekSD Bypass Tip</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transform group-open:rotate-180 transition"></i>
+                    </summary>
+                    <div class="mt-2 space-y-1 text-gray-300 bg-slate-950 p-2.5 rounded border border-slate-800 text-[11px]">
+                        <p><strong class="text-amber-400">Pacing Bypass:</strong> Fast automated keystrokes drop input in polling editors. Pacing each character event with a 120ms timeout guarantees 100% buffer capture.</p>
+                    </div>
+                </details>
+            </div>
+
+        </div>
+
+        <!-- Global Security Event Log Terminal -->
+        <section class="bg-cyber-card border border-cyber-border rounded-xl p-5 space-y-4 shadow-xl">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 font-mono text-sm">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2 font-mono">
+                            GTekSD Security Event Terminal
+                            <span id="log-count-badge" class="px-2 py-0.5 text-[10px] font-mono rounded-full bg-slate-800 text-cyan-400 border border-slate-700">0 Events</span>
+                        </h3>
+                        <p class="text-xs text-gray-400">Timestamped event log capturing real-time DOM events, clipboard interactions, traversals, and bypass triggers[cite: 2].</p>
+                    </div>
+                </div>
+
+                <!-- Terminal Log Controls -->
+                <div class="flex items-center flex-wrap gap-2 text-xs font-mono">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-gray-500 text-xs"></i>
+                        <input type="text" 
+                               id="log-search" 
+                               placeholder="Filter event logs..." 
+                               oninput="filterLogs()" 
+                               class="bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-cyan-500 w-36 md:w-48" />
+                    </div>
+                    <select id="log-filter-target" onchange="filterLogs()" class="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-gray-300 focus:outline-none focus:border-cyan-500">
+                        <option value="ALL">All Methods</option>
+                        <option value="Method 01">Method 01 (JS Listener)</option>
+                        <option value="Method 02">Method 02 (Inline HTML)</option>
+                        <option value="Method 03">Method 03 (Shortcut Key)</option>
+                        <option value="Method 04">Method 04 (Context Menu)</option>
+                        <option value="Method 05">Method 05 (Cleanser)</option>
+                        <option value="Method 06">Method 06 (Canvas Input)</option>
+                        <option value="Method 07">Method 07 (Iframe Traversal)</option>
+                        <option value="Method 08">Method 08 (Shadow DOM)</option>
+                        <option value="Method 09">Method 09 (Native Setter)</option>
+                        <option value="Method 10">Method 10 (Selection-Free)</option>
+                        <option value="Method 11">Method 11 (Input Throttle)</option>
+                    </select>
+                    <button onclick="clearLogs()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-gray-300 border border-slate-700 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can text-rose-400"></i> Clear
+                    </button>
+                    <button onclick="exportLogs()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-file-export text-cyan-400"></i> Export JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Log Terminal Window -->
+            <div id="terminal-window" class="code-block rounded-xl p-4 h-64 overflow-y-auto font-mono text-xs space-y-2 border border-slate-800">
+                <div id="terminal-empty-state" class="text-gray-500 italic text-center py-14">
+                    <i class="fa-solid fa-shield-halved text-3xl mb-2 text-slate-800 block"></i>
+                    No security events captured yet. Copy, paste, right-click, or trigger traversals to record telemetry[cite: 2].
+                </div>
+                <div id="log-entries-container" class="space-y-1.5"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- GTekSD Footer -->
+    <footer class="border-t border-cyber-border bg-slate-900/80 px-4 py-4 text-center text-xs text-gray-400 font-mono">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="text-white font-bold">GTekSD</span>
+                <span class="text-gray-500">|</span>
+                <span>Powered by <strong class="text-cyan-400">GTekSD</strong></span>
+                <span class="text-gray-500">•</span>
+                <span>Created by <strong class="text-cyan-400">Сухас Дхолз</strong></span>
+            </div>
+            <div class="text-gray-500 text-[11px] flex items-center gap-4">
+                <span>Security Research Sandbox</span>
+                <span>NIST SP 800-63B Guidelines</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const TEST_PAYLOAD = "GTekSD-SEC-2026-TEST";
+        let logDatabase = [];
+        let canvasState = "";
+        let canvasFocused = false;
+
+        // Restriction Method Switches State Map (Methods 1 - 11)
+        const activeMethods = {
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: true,
+            6: true,
+            7: true,
+            8: true,
+            9: true,
+            10: true,
+            11: true
+        };
+
+        // Custom Web Component Definition for Card 8 (Shadow DOM)
+        class ShadowInputComponent extends HTMLElement {
+            constructor() {
+                super();
+                const shadow = this.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        input {
+                            width: 100%;
+                            background-color: #020617;
+                            border: 1px solid #334155;
+                            border-radius: 0.5rem;
+                            padding: 0.5rem 0.75rem;
+                            font-size: 0.875rem;
+                            color: #f3f4f6;
+                            font-family: 'JetBrains Mono', monospace;
+                            outline: none;
+                            box-sizing: border-box;
+                        }
+                        input:focus {
+                            border-color: #06b6d4;
+                        }
+                    </style>
+                    <input type="text" id="shadow-input" placeholder="Encapsulated inside Shadow Root..." />
+                `;
+            }
+        }
+        customElements.define('shadow-input-component', ShadowInputComponent);
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgStyle = 'bg-slate-900 border-slate-700 text-gray-200';
+            let icon = 'fa-circle-info text-cyan-400';
+
+            if (type === 'success') {
+                bgStyle = 'bg-emerald-950/90 border-emerald-800 text-emerald-200';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgStyle = 'bg-amber-950/90 border-amber-800 text-amber-200';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            } else if (type === 'danger') {
+                bgStyle = 'bg-rose-950/90 border-rose-800 text-rose-200';
+                icon = 'fa-ban text-rose-400';
+            }
+
+            toast.className = `px-4 py-2.5 rounded-lg border shadow-xl text-xs font-mono flex items-center gap-2.5 transform transition-all duration-300 opacity-0 translate-y-2 pointer-events-auto ${bgStyle}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('opacity-0', 'translate-y-2'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Copy Test Payload Helper
+        function copyTestPayload() {
+            const tempInput = document.createElement('input');
+            tempInput.value = TEST_PAYLOAD;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast(`Payload copied to clipboard: "${TEST_PAYLOAD}"`, 'success');
+                } else {
+                    showToast('Failed to copy payload automatically.', 'warning');
+                }
+            } catch (err) {
+                showToast('Clipboard copy error.', 'danger');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // Toggle Method Restriction Switch
+        function toggleMethod(methodId) {
+            const toggle = document.getElementById(`toggle-${methodId}`);
+            const label = document.getElementById(`toggle-label-${methodId}`);
+            const isActive = toggle.checked;
+
+            activeMethods[methodId] = isActive;
+            label.innerText = isActive ? 'Active' : 'Disabled';
+            label.className = `ml-2 text-[11px] font-mono ${isActive ? 'text-cyan-400' : 'text-gray-500'}`;
+
+            if (methodId === 4) {
+                const field4 = document.getElementById('field-4');
+                if (isActive) {
+                    field4.classList.add('no-select');
+                } else {
+                    field4.classList.remove('no-select');
+                }
+            }
+
+            updateActiveEnginesBadge();
+            showToast(`Method ${methodId < 10 ? '0' + methodId : methodId} restriction ${isActive ? 'enabled' : 'disabled'}.`, isActive ? 'info' : 'warning');
+        }
+
+        // Toggle All Methods Switch
+        function toggleAllMethods() {
+            const allActive = Object.values(activeMethods).every(v => v === true);
+            const targetState = !allActive;
+
+            for (let i = 1; i <= 11; i++) {
+                activeMethods[i] = targetState;
+                const toggle = document.getElementById(`toggle-${i}`);
+                if (toggle) toggle.checked = targetState;
+                const label = document.getElementById(`toggle-label-${i}`);
+                if (label) {
+                    label.innerText = targetState ? 'Active' : 'Disabled';
+                    label.className = `ml-2 text-[11px] font-mono ${targetState ? 'text-cyan-400' : 'text-gray-500'}`;
+                }
+            }
+
+            const field4 = document.getElementById('field-4');
+            if (targetState) field4.classList.add('no-select');
+            else field4.classList.remove('no-select');
+
+            document.getElementById('mass-toggle-label').innerText = targetState ? 'Toggle All Off' : 'Toggle All On';
+            updateActiveEnginesBadge();
+            showToast(`All 11 restriction engines set to ${targetState ? 'ACTIVE' : 'DISABLED'}.`, targetState ? 'info' : 'warning');
+        }
+
+        function updateActiveEnginesBadge() {
+            const count = Object.values(activeMethods).filter(Boolean).length;
+            const badgeText = document.getElementById('active-count-text');
+            const dot = document.getElementById('active-engines-count');
+
+            badgeText.innerText = `${count}/11 Restrictions Active`;
+            if (count === 11) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+            else if (count > 0) dot.className = "w-2 h-2 rounded-full bg-amber-400";
+            else dot.className = "w-2 h-2 rounded-full bg-rose-500";
+        }
+
+        // Flash Card Status Badge Feedback
+        function flashCardStatus(methodId, statusText, statusType = 'danger') {
+            const badge = document.getElementById(`badge-${methodId}`);
+            if (!badge) return;
+
+            let styleClass = 'bg-rose-950 text-rose-400 border-rose-800';
+            if (statusType === 'warning') styleClass = 'bg-amber-950 text-amber-400 border-amber-800';
+            if (statusType === 'success') styleClass = 'bg-emerald-950 text-emerald-400 border-emerald-800';
+
+            badge.className = `text-[10px] px-1.5 py-0.5 rounded border ${styleClass} animate-pulse`;
+            badge.innerText = statusText;
+
+            setTimeout(() => {
+                badge.className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800';
+                badge.innerText = 'Allowed';
+            }, 2500);
+        }
+
+        // Security Event Logger
+        function logSecurityEvent(cardMethod, eventType, actionBlocked, details = '') {
+            const now = new Date();
+            const timestamp = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+
+            logDatabase.unshift({
+                id: Date.now() + Math.random(),
+                timestamp,
+                cardMethod,
+                eventType,
+                actionBlocked,
+                details
+            });
+
+            renderLogs();
+        }
+
+        function renderLogs() {
+            const container = document.getElementById('log-entries-container');
+            const emptyState = document.getElementById('terminal-empty-state');
+            const badgeCount = document.getElementById('log-count-badge');
+
+            const searchQuery = document.getElementById('log-search').value.toLowerCase();
+            const targetFilter = document.getElementById('log-filter-target').value;
+
+            const filteredLogs = logDatabase.filter(log => {
+                const matchesTarget = targetFilter === 'ALL' || log.cardMethod === targetFilter;
+                const matchesSearch = log.cardMethod.toLowerCase().includes(searchQuery) ||
+                                      log.eventType.toLowerCase().includes(searchQuery) ||
+                                      log.details.toLowerCase().includes(searchQuery);
+                return matchesTarget && matchesSearch;
+            });
+
+            badgeCount.innerText = `${logDatabase.length} Event${logDatabase.length === 1 ? '' : 's'}`;
+
+            if (filteredLogs.length === 0) {
+                emptyState.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            container.innerHTML = filteredLogs.map(log => {
+                let statusBadge = log.actionBlocked 
+                    ? `<span class="text-rose-400 bg-rose-950/70 border border-rose-800/80 px-1.5 py-0.5 rounded">BLOCKED</span>`
+                    : `<span class="text-emerald-400 bg-emerald-950/70 border border-emerald-800/80 px-1.5 py-0.5 rounded">PASSED / EXECUTED</span>`;
+
+                return `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-2 bg-slate-900/90 border border-slate-800/80 rounded hover:border-slate-700 transition">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-gray-500">[${log.timestamp}]</span>
+                            <span class="text-cyan-400 font-bold">${log.cardMethod}</span>
+                            <span class="text-gray-300 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${log.eventType}</span>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-gray-400 text-[11px] truncate max-w-xs md:max-w-md">
+                            ${log.details}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterLogs() { renderLogs(); }
+        function clearLogs() {
+            logDatabase = [];
+            renderLogs();
+            showToast('Security logs cleared.', 'info');
+        }
+
+        function clearAllInputs() {
+            for (let i = 1; i <= 11; i++) {
+                const input = document.getElementById(`field-${i}`);
+                if (input) input.value = '';
+            }
+            canvasState = "";
+            renderCanvasInput();
+
+            const iframe = document.getElementById('iframe-target');
+            if (iframe && iframe.contentDocument) {
+                const innerInput = iframe.contentDocument.getElementById('iframe-inner-input');
+                if (innerInput) innerInput.value = '';
+            }
+
+            const shadowComp = document.getElementById('shadow-container');
+            if (shadowComp && shadowComp.shadowRoot) {
+                const shadowInput = shadowComp.shadowRoot.getElementById('shadow-input');
+                if (shadowInput) shadowInput.value = '';
+            }
+
+            const stateDisplay = document.getElementById('reactive-state-display');
+            if (stateDisplay) {
+                stateDisplay.innerText = "[Empty State]";
+                stateDisplay.className = "text-amber-400 font-bold";
+            }
+
+            showToast('All test input fields cleared across DOM, Shadow DOM, and Iframe.', 'info');
+        }
+
+        function exportLogs() {
+            if (logDatabase.length === 0) {
+                showToast('No logs available for export.', 'warning');
+                return;
+            }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logDatabase, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `GTekSD_Security_Logs_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('GTekSD log suite exported as JSON.', 'success');
+        }
+
+        // Theme Toggle (Dark Cyber vs Matrix Mode)
+        function toggleMatrixTheme() {
+            const html = document.documentElement;
+            const isMatrix = html.classList.toggle('matrix-mode');
+            document.getElementById('theme-btn-text').innerText = isMatrix ? 'Cyber Dark View' : 'Matrix View';
+            showToast(`Theme switched to ${isMatrix ? 'Matrix Neon' : 'Cyber Dark'} mode.`, 'info');
+        }
+
+        // CARD 1: JS Event Listener Interception
+        const field1 = document.getElementById('field-1');
+        field1.addEventListener('paste', (e) => {
+            if (activeMethods[1]) {
+                e.preventDefault();
+                flashCardStatus(1, 'Paste Blocked', 'danger');
+                logSecurityEvent('Method 01', 'PASTE', true, 'Blocked via addEventListener("paste", e.preventDefault()).');
+                showToast('Method 01: Paste attempt blocked by JS listener.', 'danger');
+            } else {
+                flashCardStatus(1, 'Paste Allowed', 'success');
+                logSecurityEvent('Method 01', 'PASTE', false, 'Paste allowed because Method 01 switch is toggled OFF.');
+            }
+        });
+
+        // CARD 2: Inline HTML Handler Simulation
+        const field2 = document.getElementById('field-2');
+        field2.addEventListener('paste', (e) => {
+            if (activeMethods[2]) {
+                e.preventDefault();
+                flashCardStatus(2, 'Inline Blocked', 'danger');
+                logSecurityEvent('Method 02', 'PASTE', true, 'Blocked via simulated inline onpaste="return false;" attribute.');
+                showToast('Method 02: Blocked by inline attribute listener.', 'danger');
+            } else {
+                flashCardStatus(2, 'Paste Allowed', 'success');
+                logSecurityEvent('Method 02', 'PASTE', false, 'Paste allowed because Method 02 switch is toggled OFF.');
+            }
+        });
+
+        // CARD 3: Keyboard Combination Interceptor
+        const field3 = document.getElementById('field-3');
+        field3.addEventListener('keydown', (e) => {
+            const isControlOrCmd = e.ctrlKey || e.metaKey;
+            const keyLower = e.key.toLowerCase();
+
+            if (activeMethods[3] && ((isControlOrCmd && ['v', 'c', 'x'].includes(keyLower)) || (e.shiftKey && e.key === 'Insert'))) {
+                e.preventDefault();
+                const shortcut = `${e.ctrlKey ? 'Ctrl+' : ''}${e.metaKey ? 'Cmd+' : ''}${e.shiftKey ? 'Shift+' : ''}${e.key.toUpperCase()}`;
+                flashCardStatus(3, `${shortcut} Intercepted`, 'danger');
+                logSecurityEvent('Method 03', 'KEYDOWN', true, `Intercepted keyboard shortcut ${shortcut}.`);
+                showToast(`Method 03: Intercepted key shortcut ${shortcut}.`, 'danger');
+            }
+        });
+
+        // CARD 4: Context Menu & Selection Blocker
+        const field4 = document.getElementById('field-4');
+        field4.addEventListener('contextmenu', (e) => {
+            if (activeMethods[4]) {
+                e.preventDefault();
+                flashCardStatus(4, 'Right-Click Blocked', 'danger');
+                logSecurityEvent('Method 04', 'CONTEXTMENU', true, 'Blocked contextmenu event execution.');
+                showToast('Method 04: Blocked contextmenu access.', 'danger');
+            }
+        });
+
+        // CARD 5: Dynamic Mutation & Cleansing
+        const field5 = document.getElementById('field-5');
+        field5.addEventListener('paste', (e) => {
+            if (activeMethods[5]) {
+                logSecurityEvent('Method 05', 'PASTE_MUTATED', false, 'Paste allowed temporarily; queuing microtask input scrubber.');
+                setTimeout(() => {
+                    field5.value = '[GTekSD_SANITY_CLEANSED]';
+                    flashCardStatus(5, 'Input Scrubbed', 'warning');
+                    logSecurityEvent('Method 05', 'SCRUBBED', true, 'Microtask tick replaced pasted value with redacted string.');
+                    showToast('Method 05: Value was pasted but immediately scrubbed.', 'warning');
+                }, 0);
+            }
+        });
+
+        // CARD 6: Canvas Virtual Keypad & Rendering Engine
+        const canvas = document.getElementById('custom-canvas-input');
+        const ctx = canvas.getContext('2d');
+        const canvasStatusBadge = document.getElementById('canvas-status-badge');
+
+        function renderCanvasInput() {
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (canvasFocused) {
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+            } else {
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0, 0, canvas.width, canvas.height);
+            }
+
+            ctx.font = '13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#e2e8f0';
+            const displayText = canvasState.length > 30 ? canvasState.substring(canvasState.length - 30) : canvasState;
+            ctx.fillText(displayText || (canvasFocused ? "" : "Click canvas surface to type..."), 12, 24);
+
+            if (canvasFocused) {
+                const textWidth = ctx.measureText(displayText).width;
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(14 + textWidth, 10, 2, 18);
+            }
+        }
+
+        canvas.addEventListener('focus', () => {
+            canvasFocused = true;
+            canvasStatusBadge.innerText = "Canvas Focused (Virtual Engine)";
+            canvasStatusBadge.className = "text-[10px] text-cyan-400 font-mono";
+            renderCanvasInput();
+        });
+
+        canvas.addEventListener('blur', () => {
+            canvasFocused = false;
+            canvasStatusBadge.innerText = "Click canvas to focus";
+            canvasStatusBadge.className = "text-[10px] text-gray-500 font-mono";
+            renderCanvasInput();
+        });
+
+        canvas.addEventListener('keydown', (e) => {
+            if (!canvasFocused) return;
+
+            if (activeMethods[6] && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+                flashCardStatus(6, 'No Paste Binding', 'danger');
+                logSecurityEvent('Method 06', 'PASTE_ATTEMPT', true, 'Paste failed: Canvas element lacks native HTML DOM paste context.');
+                showToast('Method 06: Native paste cannot target canvas graphics.', 'danger');
+                return;
+            }
+
+            if (e.key === 'Backspace') {
+                canvasState = canvasState.slice(0, -1);
+                renderCanvasInput();
+            } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+                canvasState += e.key;
+                renderCanvasInput();
+                logSecurityEvent('Method 06', 'KEY_DRAWN', false, `Appended glyph byte '${e.key}' into graphics buffer.`);
+            }
+        });
+
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // CARD 7: Same-Origin Iframe Focus Traversal Function
+        function testIframeTraversal() {
+            function getDeepActiveElement(doc = document) {
+                let active = doc.activeElement;
+                while (active && active.tagName === 'IFRAME') {
+                    try {
+                        const childDoc = active.contentDocument || active.contentWindow.document;
+                        if (childDoc && childDoc.activeElement && childDoc.activeElement !== active) {
+                            active = childDoc.activeElement;
+                        } else {
+                            break;
+                        }
+                    } catch (e) {
+                        break;
+                    }
+                }
+                return active;
+            }
+
+            const iframe = document.getElementById('iframe-target');
+            if (iframe && iframe.contentWindow) {
+                const innerInput = iframe.contentDocument.getElementById('iframe-inner-input');
+                if (innerInput) {
+                    innerInput.focus();
+                    const deepTarget = getDeepActiveElement(document);
+                    innerInput.value = TEST_PAYLOAD;
+                    flashCardStatus(7, 'Iframe Traversed', 'success');
+                    logSecurityEvent('Method 07', 'IFRAME_TRAVERSAL_SUCCESS', false, `Traversed to <${deepTarget.tagName.toLowerCase()} id="${deepTarget.id}"> inside same-origin iframe.`);
+                    showToast('Method 07: Successfully traversed iframe DOM to target active element.', 'success');
+                }
+            }
+        }
+
+        // CARD 8: Shadow DOM Focus Traversal Function
+        function testShadowDOMTraversal() {
+            function getShadowActiveElement(root = document) {
+                let active = root.activeElement;
+                while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+                    active = active.shadowRoot.activeElement;
+                }
+                return active;
+            }
+
+            const shadowComp = document.getElementById('shadow-container');
+            if (shadowComp && shadowComp.shadowRoot) {
+                const shadowInput = shadowComp.shadowRoot.getElementById('shadow-input');
+                if (shadowInput) {
+                    shadowInput.focus();
+                    const deepTarget = getShadowActiveElement(document);
+                    shadowInput.value = TEST_PAYLOAD;
+                    flashCardStatus(8, 'Shadow DOM Traversed', 'success');
+                    logSecurityEvent('Method 08', 'SHADOW_TRAVERSAL_SUCCESS', false, `Traversed shadowRoot to <${deepTarget.tagName.toLowerCase()} id="${deepTarget.id}"> inside web component.`);
+                    showToast('Method 08: Located input inside Shadow DOM encapsulation.', 'success');
+                }
+            }
+        }
+
+        // CARD 9: Native Value Setter & Event Dispatching Function
+        function injectNativeSetter() {
+            const field9 = document.getElementById('field-9');
+            if (!field9) return;
+
+            const nativeValueSetter = Object.getOwnPropertyDescriptor(
+                window.HTMLInputElement.prototype,
+                'value'
+            ).set;
+
+            nativeValueSetter.call(field9, TEST_PAYLOAD);
+            field9.dispatchEvent(new Event('input', { bubbles: true }));
+
+            flashCardStatus(9, 'Native Setter Executed', 'success');
+            logSecurityEvent('Method 09', 'NATIVE_SETTER_DISPATCH', false, `Invoked HTMLInputElement.prototype setter & dispatched bubbling input event.`);
+            showToast('Method 09: Native setter injected and framework input event dispatched.', 'success');
+        }
+
+        // CARD 10: Selection-Free Input Fallback Function
+        function testSelectionFreeFallback() {
+            const field10 = document.getElementById('field-10');
+            if (!field10) return;
+
+            let selectionSupported = true;
+            try {
+                const start = field10.selectionStart;
+                const end = field10.selectionEnd;
+            } catch (err) {
+                selectionSupported = false;
+                logSecurityEvent('Method 10', 'SELECTION_PROHIBITED_CAUGHT', true, `Caught prohibited selection access on <input type="email">: ${err.message}`);
+            }
+
+            if (!selectionSupported) {
+                field10.value = TEST_PAYLOAD + "@gteksd.org";
+                flashCardStatus(10, 'Fallback Used', 'warning');
+                logSecurityEvent('Method 10', 'SELECTION_FREE_FALLBACK', false, `Appended payload using selection-free value assignment fallback.`);
+                showToast('Method 10: Selection properties prohibited; safely executed selection-free fallback.', 'warning');
+            } else {
+                field10.value = TEST_PAYLOAD + "@gteksd.org";
+                flashCardStatus(10, 'Value Inserted', 'success');
+                logSecurityEvent('Method 10', 'SAFE_INSERTION', false, 'Inserted value using safe fallback procedure.');
+                showToast('Method 10: Safe insertion executed.', 'success');
+            }
+        }
+
+        // CARD 11: Input Event Throttling Function
+        async function runThrottledInputInjection() {
+            const field11 = document.getElementById('field-11');
+            if (!field11) return;
+
+            field11.value = "";
+            const payloadChars = TEST_PAYLOAD.split("");
+            flashCardStatus(11, 'Throttling Active', 'warning');
+            logSecurityEvent('Method 11', 'THROTTLE_RUN_STARTED', false, `Initiating 120ms character pacing loop for ${payloadChars.length} characters.`);
+
+            for (let i = 0; i < payloadChars.length; i++) {
+                field11.value += payloadChars[i];
+                field11.dispatchEvent(new Event('input', { bubbles: true }));
+                logSecurityEvent('Method 11', 'THROTTLED_CHAR_DISPATCH', false, `Dispatched char '${payloadChars[i]}' (Delay: 120ms)`);
+                await new Promise(resolve => setTimeout(resolve, 120));
+            }
+
+            flashCardStatus(11, 'Pacing Complete', 'success');
+            showToast('Method 11: 120ms throttled character injection completed without input drop.', 'success');
+        }
+
+        // Setup Document Elements on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            const iframe = document.getElementById('iframe-target');
+            if (iframe) {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                doc.open();
+                doc.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { margin: 0; background-color: #020617; padding: 4px; }
+                            input {
+                                width: 100%;
+                                box-sizing: border-box;
+                                background-color: #020617;
+                                border: 1px solid #334155;
+                                border-radius: 6px;
+                                padding: 6px 10px;
+                                font-size: 12px;
+                                color: #f3f4f6;
+                                font-family: monospace;
+                                outline: none;
+                            }
+                            input:focus { border-color: #06b6d4; }
+                        </style>
+                    </head>
+                    <body>
+                        <input type="text" id="iframe-inner-input" placeholder="Nested input inside iframe..." />
+                    </body>
+                    </html>
+                `);
+                doc.close();
+            }
+
+            const field9 = document.getElementById('field-9');
+            const stateDisplay = document.getElementById('reactive-state-display');
+            if (field9) {
+                let internalState = "";
+                Object.defineProperty(field9, '_frameworkValue', {
+                    value: "",
+                    writable: true
+                });
+
+                field9.addEventListener('input', (e) => {
+                    internalState = field9.value;
+                    stateDisplay.innerText = `"${internalState}"`;
+                    stateDisplay.className = "text-emerald-400 font-bold font-mono";
+                    logSecurityEvent('Method 09', 'FRAMEWORK_STATE_UPDATED', false, `State bound to value: "${internalState}"`);
+                });
+            }
+        });
+
+        window.addEventListener('load', () => {
+            renderCanvasInput();
+            logSecurityEvent('SYSTEM', 'INIT', false, 'GTekSD Security Lab v3.5 initialized by Сухас Дхолз.');
+        });
+    </script>
+</body>
+</html>
