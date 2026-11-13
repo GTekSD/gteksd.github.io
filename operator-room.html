@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090d12">
+  <meta name="description" content="A small GTekSD scavenger hunt, cipher, and collection of project-exploration achievements.">
+  <link rel="icon" href="portfolio/data/favicon/favicon.ico">
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js" defer></script>
+  <title>Operator Room — GTekSD</title>
+</head>
+<body class="operator-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="index.html" aria-label="GTekSD home">
+        <span class="brand-mark" aria-hidden="true">&gt;_</span>
+        <span class="brand-name">GTekSD<span class="brand-caption">OPERATOR ROOM</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+        <span class="menu-icon" aria-hidden="true"></span>
+        <span class="sr-only">Toggle navigation</span>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="portfolio/portfolio.html">Portfolio</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="operator-main">
+    <section class="operator-hero">
+      <div class="shell operator-shell">
+        <p class="eyebrow"><span class="status-dot"></span> GTekSD / restricted curiosity</p>
+        <h1>Operator <span class="text-gradient">Room.</span></h1>
+        <p class="operator-intro">Three clues are scattered across the site. Recover them to open the decoder, then translate the message to get inside.</p>
+
+        <section class="operator-console" aria-labelledby="console-title">
+          <div class="operator-console-bar">
+            <h2 id="console-title">Signal decoder</h2>
+            <span class="operator-console-status" data-room-progress>0 / 3 clues</span>
+          </div>
+
+          <ol class="operator-clue-list">
+            <li data-clue-status="home"><span class="operator-clue-number">01</span><span>Home transmission</span><span class="operator-clue-state">Not recovered</span></li>
+            <li data-clue-status="projects"><span class="operator-clue-number">02</span><span>Workbench record</span><span class="operator-clue-state">Not recovered</span></li>
+            <li data-clue-status="portfolio"><span class="operator-clue-number">03</span><span>Portfolio signal</span><span class="operator-clue-state">Not recovered</span></li>
+          </ol>
+
+          <p class="operator-lock-message" data-room-lock>Collect all three clues to enable the decoder. Hints are hidden in plain sight on the Home, Projects, and Portfolio pages.</p>
+
+          <div class="cipher-message" aria-label="Encoded message">
+            <span class="cipher-label">Intercepted text</span>
+            <code>WKH NHB LV WKUHH</code>
+          </div>
+
+          <form class="cipher-form" data-cipher-form>
+            <label for="cipher-answer">Decoded phrase</label>
+            <div class="cipher-entry">
+              <input id="cipher-answer" name="answer" type="text" autocomplete="off" spellcheck="false" placeholder="Enter the decoded message" disabled required>
+              <button class="button button-primary" type="submit" disabled>Decode signal</button>
+            </div>
+            <p class="cipher-feedback" data-cipher-feedback aria-live="polite"></p>
+          </form>
+
+          <div class="operator-room-reveal" data-room-reveal hidden>
+            <p class="eyebrow"><span class="status-dot"></span> Access granted</p>
+            <h2>Welcome, operator.</h2>
+            <p>You followed the clues, cracked the cipher, and earned your place in the room. Keep exploring to collect the project badges.</p>
+            <div class="operator-achievements" aria-label="Exploration achievements">
+              <article class="operator-achievement" data-achievement="scout">
+                <span class="achievement-mark" aria-hidden="true">01</span>
+                <h3>Workbench Scout</h3>
+                <p>Explore 3 different project cards.</p>
+                <span class="achievement-status">Locked</span>
+              </article>
+              <article class="operator-achievement" data-achievement="cartographer">
+                <span class="achievement-mark" aria-hidden="true">02</span>
+                <h3>Project Cartographer</h3>
+                <p>Explore 10 different project cards.</p>
+                <span class="achievement-status">Locked</span>
+              </article>
+              <article class="operator-achievement" data-achievement="sequence">
+                <span class="achievement-mark" aria-hidden="true">03</span>
+                <h3>Operator Mode</h3>
+                <p>Discover the keyboard sequence.</p>
+                <span class="achievement-status">Locked</span>
+              </article>
+            </div>
+            <div class="operator-game-links">
+              <a class="button button-primary operator-matrix-link" href="portfolio/pages/Matrix-Rain.html">Enter the Matrix Rain <span aria-hidden="true">↗</span></a>
+              <a class="button button-quiet operator-snake-link" href="portfolio/pages/Snake.html">Play Snake <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </section>
+
+        <nav class="operator-trail" aria-label="Scavenger hunt pages">
+          <a href="index.html">01 / Home</a>
+          <a href="projects.html">02 / Projects</a>
+          <a href="portfolio/portfolio.html">03 / Portfolio</a>
+        </nav>
+        <p class="operator-footnote">Progress and achievements are saved in this browser only. Hint: the keyboard has a classic secret sequence, too.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <a class="brand footer-brand" href="index.html" aria-label="GTekSD home">
+        <span class="brand-mark" aria-hidden="true">&gt;_</span>
+        <span class="brand-name">GTekSD<span class="brand-caption">BUILD CAREFULLY. SHARE WHAT YOU LEARN.</span></span>
+      </a>
+      <p>Curiosity is a feature.</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="portfolio/portfolio.html">Portfolio</a>
+      </div>
+      <small>© <span id="current-year">2026</span> GTekSD</small>
+    </div>
+  </footer>
+</body>
+</html>

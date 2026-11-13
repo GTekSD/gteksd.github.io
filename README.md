@@ -1,25 +1,22 @@
-# [gteksd.github.io](https://gteksd.github.io/)
+# GTekSD
 
-https://gteksd.github.io/portfolio/Payloads/xss.js
+The GTekSD website is a curated home for cybersecurity projects, practical learning resources, and security work.
 
-#### Payloads
-```
-Usage: <script src=//link></script>
+Visit [gteksd.github.io](https://gteksd.github.io/).
 
-EX: <script src=//gteksd.github.io/portfolio/Payloads/xss.js></script>
-    %3cscript%20src=//gteksd.github.io/portfolio/Payloads/xss.js%3e%3c/script%3e  
+## Website files
 
-%3c = <
-%20 = space
-%3e = >
-```
-```
-https://gteksd.github.io/portfolio/Payloads/div-xss.html
-https://gteksd.github.io/portfolio/Payloads/img-xss.html
-https://gteksd.github.io/portfolio/Payloads/svg-xss.html
-https://gteksd.github.io/portfolio/Payloads/xss.css
-https://gteksd.github.io/portfolio/Payloads/xss.html
-https://gteksd.github.io/portfolio/Payloads/xss.js
-https://gteksd.github.io/portfolio/Payloads/xss.md
-https://gteksd.github.io/portfolio/Payloads/xss.xml
-```
+- `index.html` — homepage and featured projects
+- `projects.html` — searchable, filterable project catalog
+- `portfolio/portfolio.html` — Suhas Dhole's detailed portfolio and résumé
+- `operator-room.html` — browser-based scavenger hunt and arcade links
+- `portfolio/pages/Matrix-Rain.html` — Matrix Rain experience
+- `portfolio/pages/Snake.html` — Snake arcade game
+- `site.css` — responsive visual design
+- `site.js` — shared navigation, project search and filters, theme, easter eggs, and dynamic footer year
+
+The site is a static GitHub Pages website and does not require a build step or external JavaScript libraries.
+
+## Updating the project catalog
+
+Edit the featured cards in `index.html` and the complete catalog in `projects.html`. Keep project descriptions accurate, link to the original public repository, and check its current status and license.
