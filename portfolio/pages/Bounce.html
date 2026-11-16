@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090d12">
+  <meta name="description" content="Bounce through a bright, original arcade platform game by GTekSD.">
+  <link rel="icon" href="../data/favicon/favicon.ico">
+  <link rel="stylesheet" href="../../site.css">
+  <link rel="stylesheet" href="bounce-game.css">
+  <script src="../../site.js" defer></script>
+  <script src="arcade-audio.js" defer></script>
+  <script src="bounce-game.js" defer></script>
+  <title>Bounce — GTekSD</title>
+</head>
+<body class="bounce-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="../../index.html" aria-label="GTekSD home">
+        <span class="brand-mark" aria-hidden="true">&gt;_</span>
+        <span class="brand-name">GTekSD<span class="brand-caption">OPERATOR ARCADE</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+        <span class="menu-icon" aria-hidden="true"></span>
+        <span class="sr-only">Toggle navigation</span>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
+        <a href="../../index.html">Home</a>
+        <a href="../../projects.html">Projects</a>
+        <a href="../portfolio.html">Portfolio</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Color theme: system. Activate to switch to light.">
+          <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+          <span class="sr-only" data-theme-status>System theme</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="bounce-main">
+    <section class="bounce-hero">
+      <div class="shell bounce-shell">
+        <a class="bounce-back-link" href="../../operator-room.html">← Back to the Operator Room</a>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> GTekSD / pocket arcade</p>
+        <h1>Bounce <span class="text-gradient">beyond.</span></h1>
+        <p class="bounce-intro">Keep your little comet moving. Hop between floating decks, scoop up star shards, and find the gate at the top of each sky.</p>
+
+        <div class="bounce-layout">
+          <section class="bounce-machine" aria-label="Bounce arcade">
+            <div class="bounce-machine-top">
+              <span class="bounce-machine-mark"><span aria-hidden="true">✳</span> GT / SKY RUNNER</span>
+              <span class="bounce-machine-state" data-bounce-state>READY</span>
+            </div>
+            <div class="bounce-screen">
+              <div class="bounce-scorebar" aria-label="Game statistics">
+                <p><span>SHARDS</span><output data-bounce-score>000</output></p>
+                <p><span>SKY</span><output data-bounce-level>01</output></p>
+                <p><span>LIVES</span><output data-bounce-lives>♥ ♥ ♥</output></p>
+              </div>
+              <div class="bounce-board-frame">
+                <canvas id="bounce-board" width="960" height="540" tabindex="0" aria-label="Bounce platform game. Use arrow keys or A and D to move, and Space or W to jump." aria-describedby="bounce-instructions">
+                  Bounce platform game. Move left and right, jump between platforms, collect star shards, and reach the glowing gate.
+                </canvas>
+                <div class="bounce-overlay" data-bounce-overlay>
+                  <span class="bounce-overlay-icon" aria-hidden="true">✦</span>
+                  <strong data-bounce-overlay-title>Ready to bounce?</strong>
+                  <span data-bounce-overlay-copy>Collect the shards. Find the gate.</span>
+                  <button class="button button-primary" type="button" data-bounce-overlay-start>Start run</button>
+                </div>
+              </div>
+              <p class="bounce-status" data-bounce-status role="status" aria-live="polite">Ready. Start a run when you're set.</p>
+            </div>
+            <div class="bounce-machine-foot">
+              <span>ORIGINAL GTekSD GAME</span>
+              <span aria-hidden="true">✦ &nbsp; ◇ &nbsp; ✦</span>
+            </div>
+          </section>
+
+          <aside class="bounce-controls" aria-label="Game controls and settings">
+            <p class="eyebrow"><span class="section-index">01</span> Run controls</p>
+            <div class="bounce-action-buttons">
+              <button class="button button-primary" type="button" data-bounce-start>Start game</button>
+              <button class="button button-quiet" type="button" data-bounce-pause disabled>Pause</button>
+              <button class="button button-quiet" type="button" data-bounce-restart>Restart</button>
+            </div>
+
+            <label class="bounce-setting">
+              <span>Game speed</span>
+              <select data-bounce-speed aria-label="Game speed">
+                <option value="0.8">Chill</option>
+                <option value="1" selected>Standard</option>
+                <option value="1.25">Turbo</option>
+              </select>
+            </label>
+
+            <button class="bounce-mode-toggle" type="button" data-bounce-ai aria-pressed="false">
+              <span>Autoplay pilot</span>
+              <strong data-bounce-ai-label>OFF</strong>
+            </button>
+            <button class="bounce-mode-toggle" type="button" data-bounce-god aria-pressed="false">
+              <span>God mode</span>
+              <strong data-bounce-god-label>OFF</strong>
+            </button>
+            <button class="bounce-sound-toggle" type="button" data-arcade-sound>Sound: ON</button>
+
+            <div class="bounce-touch-controls" role="group" aria-label="Touch movement controls">
+              <button type="button" data-bounce-move="left" aria-label="Move left">←</button>
+              <button type="button" data-bounce-move="right" aria-label="Move right">→</button>
+              <button type="button" data-bounce-jump aria-label="Jump">Jump <span aria-hidden="true">↑</span></button>
+            </div>
+            <p id="bounce-instructions" class="bounce-instructions">Move with <kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd>. Jump with <kbd>Space</kbd>, <kbd>W</kbd>, or <kbd>↑</kbd>. <kbd>P</kbd> pauses. Touch controls are below.</p>
+            <p class="bounce-best-note">Best run: <output data-bounce-best>000</output> shards</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <a class="brand footer-brand" href="../../index.html" aria-label="GTekSD home">
+        <span class="brand-mark" aria-hidden="true">&gt;_</span>
+        <span class="brand-name">GTekSD<span class="brand-caption">BUILD CAREFULLY. SHARE WHAT YOU LEARN.</span></span>
+      </a>
+      <p>Curiosity is a feature.</p>
+      <div class="footer-links">
+        <a href="../../operator-room.html">Operator Room</a>
+        <a href="Space-Impact.html">Space Impact</a>
+        <a href="Snake.html">Snake</a>
+        <a href="../portfolio.html">Portfolio</a>
+      </div>
+      <small>© 2020 - <span id="current-year">2026</span> GTekSD</small>
+    </div>
+  </footer>
+</body>
+</html>
