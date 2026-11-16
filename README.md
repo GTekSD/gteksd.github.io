@@ -12,6 +12,9 @@ Visit [gteksd.github.io](https://gteksd.github.io/).
 - `operator-room.html` — browser-based scavenger hunt and arcade links
 - `portfolio/pages/Matrix-Rain.html` — Matrix Rain experience
 - `portfolio/pages/Snake.html` — Snake arcade game
+- `portfolio/pages/Bounce.html` — original platform arcade game
+- `portfolio/pages/Space-Impact.html` — original side-scrolling shooter
+- `portfolio/pages/arcade-audio.js` — shared, generated arcade sound effects and sound toggles
 - `site.css` — responsive visual design
 - `site.js` — shared navigation, project search and filters, theme, easter eggs, and dynamic footer year
 

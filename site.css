@@ -2390,6 +2390,75 @@ button.secret-clue-trigger {
   color: var(--muted);
 }
 
+.operator-arcade {
+  margin-bottom: 34px;
+}
+
+.operator-arcade-heading h2 {
+  margin: 0 0 7px;
+  font-size: 19px;
+}
+
+.operator-arcade-heading > p:last-child {
+  max-width: 620px;
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.operator-arcade-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.operator-arcade-card {
+  display: flex;
+  min-height: 184px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: linear-gradient(145deg, rgba(17, 26, 34, .92), rgba(11, 18, 24, .96));
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color .2s ease, transform .2s ease;
+}
+
+.operator-arcade-card:hover,
+.operator-arcade-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.operator-arcade-index {
+  margin-bottom: 12px;
+  color: var(--accent);
+  font: 9px var(--mono);
+}
+
+.operator-arcade-card > strong {
+  margin-bottom: 7px;
+  font: 600 16px var(--mono);
+}
+
+.operator-arcade-card > span:nth-last-child(2) {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.operator-arcade-cta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 15px;
+  color: var(--accent);
+  font: 10px var(--mono);
+}
+
 .operator-console {
   overflow: hidden;
   border: 1px solid var(--line-strong);
@@ -2701,6 +2770,14 @@ body.is-operator-mode::after {
 
   .operator-achievement {
     min-height: 0;
+  }
+
+  .operator-arcade-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .operator-arcade-card {
+    min-height: 150px;
   }
 
   .operator-achievement p {
